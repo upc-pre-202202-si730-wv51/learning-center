@@ -3,6 +3,9 @@
 </template>
 
 <script>
+import {FilterMatchMode} from "primevue/api";
+import {TutorialsApiService} from "@/learning/services/tutorials-api.service";
+
 export default {
   name: "tutorial-list.component",
   data() {
@@ -16,15 +19,24 @@ export default {
       filters: {},
       submitted: false,
       statuses: [
-        { label: 'Published', value: 'published'},
-        { label: 'Unpublished', value: 'unpublished'}
+        {label: 'Published', value: 'published'},
+        {label: 'Unpublished', value: 'unpublished'}
       ],
       tutorialsService: null
     };
   },
   created() {
-
+    this.tutorialsService = new TutorialsApiService();
+    this.tutorialsService.getAll().then((response) => {
+      this.tutorials = response.data;
+      console.log(this.tutorials);
+      this.tutorials.forEach((tutorial) =>
+      this.getDisplayableTutorial(tutorial));
+      console.log(this.tutorials);
+    });
+    this.initFilters();
   },
+
   methods: {
     getDisplayableTutorial(tutorial) {
       tutorial.status = tutorial.published ?
@@ -56,7 +68,105 @@ export default {
     findIndexById(id) {
       console.log(`current id: ${id}`);
       return this.tutorials.findIndex((tutorial) => tutorial.id === id);
+    },
+
+    saveTutorial() {
+      this.submitted = true;
+      if (this.tutorial.title.trim()) {
+        if (this.tutorial.id) {
+          console.log(this.tutorial);
+          this.tutorial = this.getStorableTutorial(this.tutorial);
+          this.tutorialsService
+              .update(this.tutorial.id, this.tutorial)
+              .then((response) => {
+                console.log(response.data.id)
+                this.tutorials[this.findIndexById(response.data.id)] =
+                    this.getDisplayableTutorial(response.data);
+                this.$toast.add({
+                  severity: 'success',
+                  summary: 'Successful',
+                  detail: 'Tutorial Updated',
+                  life: 3000
+                });
+                console.log(response);
+              });
+        } else {
+          this.tutorial.id = 0;
+          console.log(this.tutorial);
+          this.tutorial = this.getStorableTutorial(this.tutorial);
+          this.tutorialsService.create(this.tutorial)
+              .then((response) => {
+                this.tutorial = this.getDisplayableTutorial(response.data);
+                this.tutorials.push(this.tutorial);
+                this.$toast.add({
+                  severity: 'success',
+                  summary: 'Successful',
+                  detail: 'Tutorial Created',
+                  life: 3000
+                });
+                console.log(response);
+              });
+        }
+        this.tutorialDialog = false;
+        this.tutorial = {};
+      }
+    },
+
+    editTutorial(tutorial) {
+      console.log(tutorial);
+      this.tutorial = { ...tutorial };
+      console.log(this.tutorial);
+      this.tutorialDialog = true;
+    },
+
+    confirmDeleteTutorial(tutorial) {
+      this.tutorial = tutorial;
+      this.deleteTutorialDialog = true;
+    },
+
+    deleteTutorial() {
+      this.tutorialsService.delete(this.tutorial.id)
+          .then((response) => {
+            this.tutorials.filter((t) => t.id !== this.tutorial.id);
+            this.deleteTutorialDialog = false;
+            this.tutorial = {};
+            this.$toast.add({
+              severity: 'success',
+              summary: 'Successful',
+              detail: 'Tutorial Deleted',
+              life: 3000
+            });
+            console.log(response);
+          });
+    },
+
+    exportToCSV() {
+      this.$refs.dt.exportToCSV();
+    },
+
+    confirmDeleteSelected() {
+      this.deleteTutorialsDialog = true;
+    },
+
+    deleteSelectedTutorials() {
+      this.selectedTutorials.forEach((tutorial) => {
+        this.tutorialsService.delete(tutorial.id)
+            .then((response) => {
+              this.tutorials = this.tutorials.filter(
+                  (t) => t.id !== this.tutorial.id);
+              console.log(response);
+            });
+      });
+      this.deleteTutorialsDialog = false;
+    },
+
+    initFilters() {
+      this.filters = {
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS };
+      }
     }
+
+
   }
 }
 </script>
