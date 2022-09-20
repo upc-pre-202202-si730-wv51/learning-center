@@ -23,6 +23,12 @@
       "title": "Vue Unleashed",
       "description": "Vue at its best.",
       "published": false
+    },
+    {
+      "id": 5,
+      "title": "PrimeVue",
+      "description": "The best tutorials about PrimeVue",
+      "published": true
     }
   ]
 }

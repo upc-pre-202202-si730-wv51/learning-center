@@ -15,6 +15,11 @@ import ToastService from "primevue/toastservice";
 // Add PrimeVue Styles
 import 'primeflex/primeflex.css';
 
+// Material Design Theme
+import 'primevue/resources/themes/md-light-indigo/theme.css';
+import 'primevue/resources/primevue.min.css';
+import 'primeicons/primeicons.css';
+
 // Add PrimeVue Components
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";

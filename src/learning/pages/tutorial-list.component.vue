@@ -20,10 +20,13 @@
                      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} tutorials"
                      responsiveLayout="scroll">
         <template #header>
-          <div>
-            <h5>Manage Tutorials</h5>
-            <span><i class="pi pi-search"/> <pv-input-text v-model="filters['global'].value"
-                                                           placeholder="Search..."/></span>
+          <div class="table-header flex flex-column md:flex-row md:justify-content-between">
+            <h5 class="mb-2 md:m-0 p-as-md-center text-xl">Manage Tutorials</h5>
+            <span class="p-input-icon-left">
+              <i class="pi pi-search"/>
+              <pv-input-text
+                  v-model="filters['global'].value"
+                  placeholder="Search..."/></span>
           </div>
         </template>
 
@@ -317,7 +320,7 @@ export default {
 
     initFilters() {
       this.filters = {
-        global: {value: null, matchMode: FilterMatchMode.CONTAINS};
+        global: {value: null, matchMode: FilterMatchMode.CONTAINS}
       }
     }
 
@@ -327,5 +330,17 @@ export default {
 </script>
 
 <style scoped>
+  .table-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .confirmation-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
 
 </style>
