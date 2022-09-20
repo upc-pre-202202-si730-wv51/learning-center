@@ -12,7 +12,7 @@
           <pv-button label="Export" icon="pi pi-download" class="p-button-help" @click="exportToCSV"/>
         </template>
       </pv-toolbar>
-
+      <!-- Data Table -->
       <pv-data-table ref="dt" :value="tutorials" v-model:selection="selectedTutorials" dataKey="id"
                      :paginator="true" :rows="10" :filters="filters"
                      paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
@@ -22,27 +22,34 @@
         <template #header>
           <div>
             <h5>Manage Tutorials</h5>
-            <span><i class="pi pi-search"/> <pv-input-text v-model="filters['global'].value" placeholder="Search..."/></span>
+            <span><i class="pi pi-search"/> <pv-input-text v-model="filters['global'].value"
+                                                           placeholder="Search..."/></span>
           </div>
         </template>
+
+        <pv-column selectionMode="multiple" style="width: 3rem" :exportable="false"></pv-column>
+        <pv-column field="id" header="Id" :sortable="true" style="min-width: 12rem"></pv-column>
+        <pv-column field="title" header="Title" :sortable="true" style="min-width: 16rem"></pv-column>
+        <pv-column field="description" header="Description" :sortable="true" style="min-width: 16rem"></pv-column>
+        <pv-column field="status" header="Status" :sortable="true" style="min-width: 12rem">
+          <template #body="slotProps">
+            <pv-tag v-if="slotProps.data.status === 'Published'" severity="success">{{ slotProps.data.status }}</pv-tag>
+            <pv-tag v-else severity="info">{{ slotProps.data.status }}</pv-tag>
+          </template>
+        </pv-column>
+        <pv-column :exportable="false" style="min-width: 8rem">
+          <template #body="slotProps">
+            <pv-button icon="pi pi-pencil" class="p-button-text p-button-rounded"
+                       @click="editTutorial(slotProps.data)"/>
+            <pv-button icon="pi pi-trash" class="p-button-text p-button-rounded"
+                       @click="confirmDeleteTutorial(slotProps.data)"/>
+          </template>
+        </pv-column>
       </pv-data-table>
-      <pv-column selectionMode="multiple" style="width: 3rem" :exportable="false"></pv-column>
-      <pv-column field="id" header="Id" :sortable="true" style="min-width: 12rem"></pv-column>
-      <pv-column field="title" header="Title" :sortable="true" style="min-width: 16rem"></pv-column>
-      <pv-column field="description" header="Description" :sortable="true" style="min-width: 16rem"></pv-column>
-      <pv-column field="status" header="Status" :sortable="true" style="min-width: 12rem">
-        <template #body="slotProps">
-          <pv-tag v-if="slotProps.data.status === 'Published'" severity="success">{{ slotProps.data.status }}</pv-tag>
-          <pv-tag v-else severity="info">{{ slotProps.data.status }}</pv-tag>
-        </template>
-      </pv-column>
-      <pv-column :exportable="false" style="min-width: 8rem">
-        <template #body="slotProps">
-          <pv-button icon="pi pi-pencil" class="p-button-text p-button-rounded" @click="editTutorial(slotProps.data)"/>
-          <pv-button icon="pi pi-trash" class="p-button-text p-button-rounded" @click="confirmDeleteTutorial(slotProps.data)"/>
-        </template>
-      </pv-column>
     </div>
+
+
+
   </div>
 </template>
 
@@ -76,7 +83,7 @@ export default {
       this.tutorials = response.data;
       console.log(this.tutorials);
       this.tutorials.forEach((tutorial) =>
-      this.getDisplayableTutorial(tutorial));
+          this.getDisplayableTutorial(tutorial));
       console.log(this.tutorials);
     });
     this.initFilters();
@@ -159,7 +166,7 @@ export default {
 
     editTutorial(tutorial) {
       console.log(tutorial);
-      this.tutorial = { ...tutorial };
+      this.tutorial = {...tutorial};
       console.log(this.tutorial);
       this.tutorialDialog = true;
     },
@@ -207,7 +214,7 @@ export default {
 
     initFilters() {
       this.filters = {
-        global: { value: null, matchMode: FilterMatchMode.CONTAINS };
+        global: {value: null, matchMode: FilterMatchMode.CONTAINS};
       }
     }
 
