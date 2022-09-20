@@ -26,9 +26,9 @@
     },
     {
       "id": 5,
-      "title": "PrimeVue",
-      "description": "The best tutorials about PrimeVue",
-      "published": true
+      "title": "PrimeVue Tutorial",
+      "description": "The best Tutorials about PrimeVue UI Library.",
+      "published": false
     }
   ]
 }
