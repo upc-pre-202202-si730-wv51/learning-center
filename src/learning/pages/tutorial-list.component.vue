@@ -47,9 +47,113 @@
         </pv-column>
       </pv-data-table>
     </div>
+    <!-- New/Edit Dialog -->
+    <pv-dialog
+        v-model:visible="tutorialDialog"
+        :style="{ width: '450px'}"
+        header="Tutorial Information"
+        :modal="true"
+        class="p-fluid">
+      <div class="field mt-3">
+          <span class="p-float-label">
+            <pv-input-text type="text" id="title"
+                           v-model.trim="tutorial.title"
+                           required="true" autofocus
+                           class="{'p-invalid': submitted && !tutorial.title}"/>
+            <label for="title">Title</label>
+            <small class="p-error" v-if="submitted && !tutorial.title">Title is required</small>
+          </span>
+      </div>
+      <div class="field">
+        <span class="p-float-label">
+          <pv-textarea id="description" v-model="tutorial.description"
+                       required="false"
+                       rows="2" cols="20"/>
+          <label for="description">Description</label>
+        </span>
+      </div>
+      <div class="field">
+        <pv-dropdown id="published"
+                     v-model="tutorial.status"
+                     :options="statuses"
+                     optionLabel="label"
+                     placeholder="Select a status">
+          <template #value="slotProps">
+            <div v-if="slotProps.value && slotProps.value.value">
+              <span :class="'tutorial-badge status-'+ slotProps.value.value">
+                {{ slotProps.value.label }}
+              </span>
+            </div>
+            <div v-else-if="slotProps.value && !slotProps.value.value">
+              <span :class="'tutorial-badge status-' + slotProps.value.toLowerCase()">
+                {{ slotProps.value }}
+              </span>
+            </div>
+            <span v-else>
+              {{ slotProps.placeholder}}
+            </span>
+          </template>
+        </pv-dropdown>
 
+      </div>
+      <template #footer>
+        <pv-button :label="'Cancel'.toUpperCase()"
+                   icon="pi pi-times"
+                   class="p-button-text"
+                   @click="hideDialog"/>
+        <pv-button :label="'Save'.toUpperCase()"
+                   icon="pi pi-check"
+                   class="p-button-text"
+                   @click="saveTutorial"/>
+      </template>
+    </pv-dialog>
+    <!-- Delete confirmation dialog -->
+    <pv-dialog v-model:visible="deleteTutorialDialog"
+               :style="{ width: '450px'}"
+               header="Confirm"
+               :modal="true">
+      <div class="confirmation-content">
+        <i class="pi pi-exclamation-triangle mr-3"
+           style="font-size: 2rem"/>
+        <span v-if="tutorial">
+          Area you sure you want to delete <b>{{ tutorial.title}}</b>?
+        </span>
+      </div>
+      <template #footer>
+        <pv-button :label="'No'.toUpperCase()"
+                   icon="pi pi-times"
+                   class="p-button-text"
+                   @click="deleteTutorialDialog = false"/>
+        <pv-button :label="'Yes'.toUpperCase()"
+                   icon="pi pi-check"
+                   class="p-button-text"
+                   @click="deleteTutorial"/>
+      </template>
+    </pv-dialog>
 
-
+    <!-- Delete Selected Tutorials Confirmation Dialog -->
+    <pv-dialog v-model:visible="deleteTutorialsDialog"
+               :style="{width: '450px'}"
+               header="Confirm"
+               :modal="true">
+      <div class="confirmation-content">
+        <i class="pi pi-exclamation-triangle mr-3"
+           style="font-size: 2rem"/>
+        <span v-if="tutorial">
+          Are you sure you want to delete the selected tutorials?
+        </span>
+      </div>
+      <template #footer>
+        <pv-button :label="'No'.toUpperCase()"
+                   icon="pi pi-times"
+                   class="p-button-text"
+                   @click="deleteTutorialsDialog = false"/>
+        <pv-button :label="'Yes'.toUpperCase()"
+                   icon="pi pi-check"
+                   class="p-button-text"
+                   @click="deleteSelectedTutorials"/>
+      </template>
+    </pv-dialog>
   </div>
 </template>
 
@@ -59,7 +163,6 @@ import {TutorialsApiService} from "@/learning/services/tutorials-api.service";
 
 export default {
   name: "tutorial-list.component",
-  components: {PvTag, PvColumn, PvInputText, PvDataTable, PvButton, PvToolbar},
   data() {
     return {
       tutorials: [],
