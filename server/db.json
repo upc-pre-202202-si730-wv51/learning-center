@@ -30,5 +30,12 @@
       "description": "The best Tutorials about PrimeVue UI Library.",
       "published": false
     }
+  ],
+  "users": [
+    {
+      "email": "john.doe@gmail.com",
+      "password": "$2a$10$ZxKwN6yTAf/ndCR8l89BuOsTpMD3p5dAwKGcFJEJQYL7m6.O2ix/K",
+      "id": 1
+    }
   ]
 }
